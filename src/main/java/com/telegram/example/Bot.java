@@ -8,7 +8,6 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
@@ -23,7 +22,6 @@ import com.pengrad.telegrambot.model.Update;
 public class Bot {
     private TelegramBot bot;
     private List<BotEvent> events;
-    private MessageSender messageSender;
     private ILogger console;
     private JobDetail job;
     private Trigger trigger;
@@ -32,7 +30,6 @@ public class Bot {
     public Bot(String token) throws SchedulerException {
         this.bot = new TelegramBot(token);
         this.events = new ArrayList<>();
-        this.messageSender = new MessageSender(this.bot);
         this.console = new ConsoleLogger(Bot.class);
 
         this.events.add(new TextMessageEvent());
@@ -40,8 +37,6 @@ public class Bot {
         this.job = JobBuilder.newJob()
                 .ofType(TelegramMessageJob.class)
                 .withIdentity("telegramMessageJob")
-                .usingJobData("chatId", "-1001816752737")
-                .usingJobData("message", "example")
                 .build();
         this.trigger = TriggerBuilder.newTrigger()
                 .withIdentity("telegramMessageTrigger")

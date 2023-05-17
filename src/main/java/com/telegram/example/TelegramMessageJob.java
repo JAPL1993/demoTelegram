@@ -20,7 +20,7 @@ public class TelegramMessageJob implements Job {
         }
         TelegramBot bot = (TelegramBot) schedulerContext.get("bot");
         MessageSender sender = new MessageSender(bot);
-        sender.sendMessage("-1001816752737", "mensaje enviado desde el job");
+        sender.sendMessage("-1001816752737", "Mensaje de ambiegüedad");
     }
 
 }

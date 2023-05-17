@@ -20,12 +20,9 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 
 public class Bot {
-    private TelegramBot bot;
-    private List<BotEvent> events;
-    private ILogger console;
-    private JobDetail job;
-    private Trigger trigger;
-    private Scheduler scheduler;
+    private final TelegramBot bot;
+    private final List<BotEvent> events;
+    private final ILogger console;
 
     public Bot(String token) throws SchedulerException {
         this.bot = new TelegramBot(token);
@@ -34,27 +31,27 @@ public class Bot {
 
         this.events.add(new TextMessageEvent());
 
-        this.job = JobBuilder.newJob()
+        JobDetail job = JobBuilder.newJob()
                 .ofType(TelegramMessageJob.class)
                 .withIdentity("telegramMessageJob")
                 .build();
-        this.trigger = TriggerBuilder.newTrigger()
+        Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity("telegramMessageTrigger")
-                .forJob(this.job)
+                .forJob(job)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .withIntervalInSeconds(60)
                         .repeatForever())
                 .build();
-        this.scheduler = new StdSchedulerFactory().getScheduler();
-        this.scheduler.scheduleJob(this.job, this.trigger);
-        this.scheduler.getContext().put("bot", this.bot);
-        this.scheduler.start();
+        Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+        scheduler.scheduleJob(job, trigger);
+        scheduler.getContext().put("bot", this.bot);
+        //this.scheduler.start();
 
     }
 
     public void start() {
 
-        console.log(Level.INFO, "Iniciando Telegram Bot");
+        console.log(Level.INFO, "Starting Telegram Bot");
         bot.setUpdatesListener(new UpdatesListener() {
 
             @Override
@@ -85,7 +82,7 @@ public class Bot {
     }
 
     public void stop() {
-        console.log(Level.INFO, "Deteniendo Telegram Bot");
+        console.log(Level.INFO, "Stopping Telegram Bot");
         bot.removeGetUpdatesListener();
     }
 }
